@@ -1,8 +1,8 @@
 {
-  "name": "compras-dos-mallows",
+  "name": "market-list",
   "version": "1.0.0",
   "adonis-version": "4.1.0",
-  "description": "Um sistema de lista de compras para os mallows",
+  "description": "Um sistema de lista de compras",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
