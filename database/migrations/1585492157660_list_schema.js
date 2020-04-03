@@ -11,8 +11,8 @@ class ListSchema extends Schema {
       table.integer('supermarket').notNullable()
       table.integer('amount').notNullable()
       table.integer('price').notNullable()
-      table.integer('weighing').notNullable()
-      table.integer('weight').notNullable()
+      table.float('weighing').notNullable()
+      table.string('weight', 10).notNullable()
       table.timestamps()
     })
   }

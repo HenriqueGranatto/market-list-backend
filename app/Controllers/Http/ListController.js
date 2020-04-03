@@ -22,7 +22,8 @@ class ListController
    */
   async getAll ({ request, response }) 
   {
-    response.send(await Database.select('*').from('lists'))
+    response.send(await Database
+      .raw('select distinct markets.name as market, products.name as product, amount, price, weighing, weight from lists, markets, products where lists.product = products.id and lists.market = markets.id'))
   }
 
   /**
