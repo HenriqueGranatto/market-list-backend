@@ -27,3 +27,5 @@ Route.delete('/list/:id',     'ListController.delete')
 Route.delete('/market/:id',   'MarketController.delete')
 Route.delete('/product/:id',  'ProductController.delete')
 Route.delete('/category/:id', 'CategoryController.delete')
+
+Route.delete('/list/', 'ListController.deleteAll')
