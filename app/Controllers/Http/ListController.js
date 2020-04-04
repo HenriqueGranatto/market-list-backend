@@ -42,7 +42,8 @@ class ListController
         product = items[0].filter((obj) => obj.product == product)
 
         const weighingMax = Math.max(...getItemsWeighings(product))
-        const productWeighingMax = product.filter((obj) => obj.weighing == weighingMax)
+        const itemWithLowPrice = product.sort((a, b) => a.price - b.price)[0]
+
       
         product.map((obj, index) => {
           let differenceWeighing = calculateDifference(weighingMax, obj.weighing)
@@ -58,7 +59,7 @@ class ListController
               }
               else
               {
-                  differencePrice = productWeighingMax[0].price - obj.price
+                  differencePrice = obj.price - itemWithLowPrice.price
               }
           }
           else
