@@ -62,14 +62,14 @@ class AnalyticController
         let totalPrice = 0
 
         betterOptions.map((item) => {
-            if(item.marketID == market && item.difference != 0)
+            if(item.marketID == market)
             {
                 name = item.market
-                totalPrice += item.price
+                totalPrice += (parseFloat(item.difference) == 0) ? parseFloat(item.price) : parseFloat(item.difference)
             }
         })
         
-        economy = totalPrice - totalBetterPrice
+        economy = ((totalPrice - totalBetterPrice) < 0) ? 0 : (totalPrice - totalBetterPrice)
 
         return {name, totalPrice, economy}
     }
@@ -93,15 +93,33 @@ class AnalyticController
         for (let product of itemsByProduct) 
         {
             product = items.filter((obj) => obj.product == product)
-
             const weighingMax = Math.max(...getItemsWeighings(product))
+            const productWeighingMax = product.filter((obj) => obj.weighing == weighingMax)
         
             product.map((obj, index) => {
-            let differenceWeighing = calculateDifference(weighingMax, obj.weighing)
-            let differencePrice = (obj.weight != 'kg' && obj.weight != 'L') ? calculatePrice(differenceWeighing, obj.price) : obj.price
-            
-            product[index].difference = parseInt(differencePrice)
-            product[index].weighing = convertWeighingToOriginal(obj)
+                let differenceWeighing = calculateDifference(weighingMax, obj.weighing)
+                let differencePrice = calculatePrice(differenceWeighing, obj.price)
+
+                if(obj.weight == 'kg' || obj.weight == 'L')
+                {
+                    differenceWeighing = weighingMax - obj.weighing
+
+                    if(differenceWeighing != 0)
+                    {
+                        differencePrice = calculatePrice(differenceWeighing, obj.price) + obj.price
+                    }
+                    else
+                    {
+                        differencePrice = productWeighingMax[0].price - obj.price
+                    }
+                }
+                else
+                {
+                    differencePrice = differencePrice - obj.price
+                }
+                
+                product[index].difference = parseFloat(differencePrice).toFixed(2)
+                product[index].weighing = convertWeighingToOriginal(obj)
             })  
 
             result.push(product)

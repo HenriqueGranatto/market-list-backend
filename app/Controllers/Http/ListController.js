@@ -42,12 +42,31 @@ class ListController
         product = items[0].filter((obj) => obj.product == product)
 
         const weighingMax = Math.max(...getItemsWeighings(product))
+        const productWeighingMax = product.filter((obj) => obj.weighing == weighingMax)
       
         product.map((obj, index) => {
           let differenceWeighing = calculateDifference(weighingMax, obj.weighing)
-          let differencePrice = (obj.weight != 'kg' && obj.weight != 'L') ? calculatePrice(differenceWeighing, obj.price) : obj.price
+          let differencePrice = calculatePrice(differenceWeighing, obj.price)
+
+          if(obj.weight == 'kg' || obj.weight == 'L')
+          {
+              differenceWeighing = weighingMax - obj.weighing
+
+              if(differenceWeighing != 0)
+              {
+                  differencePrice = calculatePrice(differenceWeighing, obj.price) + obj.price
+              }
+              else
+              {
+                  differencePrice = productWeighingMax[0].price - obj.price
+              }
+          }
+          else
+          {
+              differencePrice = differencePrice - obj.price
+          }
           
-          product[index].difference = parseInt(differencePrice)
+          product[index].difference = parseFloat(differencePrice).toFixed(2)
           product[index].weighing = convertWeighingToOriginal(obj)
         })  
 
