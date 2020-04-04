@@ -8,9 +8,9 @@ class ListSchema extends Schema {
     this.create('lists', (table) => {
       table.increments()
       table.integer('product').notNullable()
-      table.integer('supermarket').notNullable()
+      table.integer('market').notNullable()
       table.integer('amount').notNullable()
-      table.integer('price').notNullable()
+      table.float('price').notNullable()
       table.float('weighing').notNullable()
       table.string('weight', 10).notNullable()
       table.timestamps()
