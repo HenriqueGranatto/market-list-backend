@@ -7,6 +7,7 @@ Route.get('/list',     'ListController.getAll')
 Route.get('/market',   'MarketController.getAll')
 Route.get('/product',  'ProductController.getAll')
 Route.get('/category', 'CategoryController.getAll')
+Route.get('/analytic', 'AnalyticController.getAll')
 
 Route.get('/list/:id',     'ListController.get')
 Route.get('/market/:id',   'MarketController.get')
