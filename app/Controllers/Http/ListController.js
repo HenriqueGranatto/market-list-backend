@@ -29,7 +29,7 @@ class ListController
     const convertWeighing = (item) => (item.weight != 'kg' && item.weight != 'L') ? calculateWeighing(item.weighing) : item.weighing
     const convertWeighingToOriginal = (item) => (item.weight != 'kg' && item.weight != 'L') ? item.weighing * 1000 :  item.weighing
 
-    let items = await Database.raw('select distinct markets.name as market, products.name as product, products.id as productID, amount, price, weighing, weight from lists, markets, products where lists.product = products.id and lists.market = markets.id')
+    let items = await Database.raw('select distinct lists.id as id, markets.name as market, products.name as product, amount, price, weighing, weight from lists, markets, products where lists.product = products.id and lists.market = markets.id')
     items[0].map((obj) => obj.weighing = convertWeighing(obj))
 
     let itemsByProduct = items[0].map((obj) => obj.product)
