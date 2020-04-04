@@ -54,7 +54,6 @@ class ListController
         result.push(product)
     }
 
-    console.log(result)
     response.send(items)
   }
 
