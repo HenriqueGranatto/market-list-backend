@@ -47,7 +47,7 @@ class ListController
           let differenceWeighing = calculateDifference(weighingMax, obj.weighing)
           let differencePrice = (obj.weight != 'kg' && obj.weight != 'L') ? calculatePrice(differenceWeighing, obj.price) : obj.price
           
-          product[index].difference = parseInt(differenceWeighing)
+          product[index].difference = parseInt(differencePrice)
           product[index].weighing = convertWeighingToOriginal(obj)
         })  
 
