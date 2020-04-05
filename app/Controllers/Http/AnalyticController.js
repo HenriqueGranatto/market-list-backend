@@ -44,14 +44,14 @@ class AnalyticController
     getTotalBetterPrice(items)
     {
         let totalPrice = 0
-        items.map((item) => (item.difference == 0) ? totalPrice += item.price : "")
+        items.map((item) => (item.unitPrice == 0) ? totalPrice += item.price : "")
         return totalPrice
     }
 
     getTotalBetterMarkets(items)
     {
         let marketsList = []
-        items.map((item) => (marketsList.indexOf(item.marketID) == -1 && item.difference == 0) ? marketsList.push(item.marketID) : "")
+        items.map((item) => (marketsList.indexOf(item.marketID) == -1 && item.unitPrice == 0) ? marketsList.push(item.marketID) : "")
         return marketsList
     }
 
@@ -65,7 +65,7 @@ class AnalyticController
             if(item.marketID == market)
             {
                 name = item.market
-                totalPrice += (parseFloat(item.difference) == 0) ? parseFloat(item.price) : parseFloat(item.difference)
+                totalPrice += (parseFloat(item.unitPrice) == 0) ? parseFloat(item.price) : parseFloat(item.unitPrice)
             }
         })
         
@@ -76,57 +76,24 @@ class AnalyticController
 
     calculateBetterPrice (items) 
     {
-        const getItemsWeighings = (items) => items.map((item) => item.weighing)
-        const calculateWeighing = (itemWeighing) => itemWeighing / 1000 
-        const calculatePrice = (itemsDifference, itemPrice) => itemsDifference * itemPrice
-        const calculateDifference = (itemsweighingMax, itemWeighing) => itemsweighingMax / itemWeighing
         const convertWeighing = (item) => (item.weight != 'kg' && item.weight != 'L') ? calculateWeighing(item.weighing) : item.weighing
-        const convertWeighingToOriginal = (item) => (item.weight != 'kg' && item.weight != 'L') ? item.weighing * 1000 :  item.weighing
 
+        const calculateWeighing = (itemWeighing) => itemWeighing / 1000 
+        const calculateUnitPrice = (item) => item.price / item.weighing
+    
         items.map((obj) => obj.weighing = convertWeighing(obj))
-
+        items.map((obj) => obj.unitPrice = calculateUnitPrice(obj))
+    
         let itemsByProduct = items.map((obj) => obj.product)
         itemsByProduct = Array.from(new Set(itemsByProduct))
-
-        let result = []
-
+    
         for (let product of itemsByProduct) 
         {
             product = items.filter((obj) => obj.product == product)
-
-            const weighingMax = Math.max(...getItemsWeighings(product))
-            const itemWithLowPrice = product.sort((a, b) => a.price - b.price)[0]
-
-        
-            product.map((obj, index) => {
-            let differenceWeighing = calculateDifference(weighingMax, obj.weighing)
-            let differencePrice = calculatePrice(differenceWeighing, obj.price)
-
-            if(obj.weight == 'kg' || obj.weight == 'L')
-            {
-                differenceWeighing = weighingMax - obj.weighing
-
-                if(differenceWeighing != 0)
-                {
-                    differencePrice = calculatePrice(differenceWeighing, obj.price) + obj.price
-                }
-                else
-                {
-                    differencePrice = obj.price - itemWithLowPrice.price
-                }
-            }
-            else
-            {
-                differencePrice = differencePrice - obj.price
-            }
-            
-            product[index].difference = parseFloat(differencePrice).toFixed(2)
-            product[index].weighing = convertWeighingToOriginal(obj)
-            })  
-
-            result.push(product)
+            product = product.sort((a, b) => a.unitPrice - b.unitPrice)[0]
+            product.unitPrice = 0
         }
-
+    
         return items
     }
 }

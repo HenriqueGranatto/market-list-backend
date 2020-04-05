@@ -22,56 +22,23 @@ class ListController
    */
   async getAll ({ request, response }) 
   {
-    const getItemsWeighings = (items) => items.map((item) => item.weighing)
-    const calculateWeighing = (itemWeighing) => itemWeighing / 1000 
-    const calculatePrice = (itemsDifference, itemPrice) => itemsDifference * itemPrice
-    const calculateDifference = (itemsweighingMax, itemWeighing) => itemsweighingMax / itemWeighing
     const convertWeighing = (item) => (item.weight != 'kg' && item.weight != 'L') ? calculateWeighing(item.weighing) : item.weighing
-    const convertWeighingToOriginal = (item) => (item.weight != 'kg' && item.weight != 'L') ? item.weighing * 1000 :  item.weighing
+
+    const calculateWeighing = (itemWeighing) => itemWeighing / 1000 
+    const calculateUnitPrice = (item) => item.price / item.weighing
 
     let items = await Database.raw('select distinct lists.id as id, markets.name as market, markets.id as marketID, products.name as product, products.id as productID, amount, price, weighing, weight from lists, markets, products where lists.product = products.id and lists.market = markets.id')
     items[0].map((obj) => obj.weighing = convertWeighing(obj))
+    items[0].map((obj) => obj.unitPrice = `R$ ${calculateUnitPrice(obj)}`)
 
     let itemsByProduct = items[0].map((obj) => obj.product)
     itemsByProduct = Array.from(new Set(itemsByProduct))
 
-    let result = []
-
     for (let product of itemsByProduct) 
     {
         product = items[0].filter((obj) => obj.product == product)
-
-        const weighingMax = Math.max(...getItemsWeighings(product))
-        const itemWithLowPrice = product.sort((a, b) => a.price - b.price)[0]
-
-      
-        product.map((obj, index) => {
-          let differenceWeighing = calculateDifference(weighingMax, obj.weighing)
-          let differencePrice = calculatePrice(differenceWeighing, obj.price)
-
-          if(obj.weight == 'kg' || obj.weight == 'L')
-          {
-              differenceWeighing = weighingMax - obj.weighing
-
-              if(differenceWeighing != 0)
-              {
-                  differencePrice = calculatePrice(differenceWeighing, obj.price) + obj.price
-              }
-              else
-              {
-                  differencePrice = obj.price - itemWithLowPrice.price
-              }
-          }
-          else
-          {
-              differencePrice = differencePrice - obj.price
-          }
-          
-          product[index].difference = parseFloat(differencePrice).toFixed(2)
-          product[index].weighing = convertWeighingToOriginal(obj)
-        })  
-
-        result.push(product)
+        product = product.sort((a, b) => a.unitPrice - b.unitPrice)[0]
+        product.unitPrice = `*R$ ${product.unitPrice}`
     }
 
     response.send(items)
