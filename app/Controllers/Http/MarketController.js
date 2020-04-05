@@ -22,7 +22,7 @@ class MarketController
    */
   async getAll ({ request, response }) 
   {
-    response.send(await Database.select('*').from('markets'))
+    response.send(await Database.select('*').from('markets').orderBy('name', 'asc'))
   }
 
   /**

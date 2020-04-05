@@ -22,7 +22,7 @@ class ProductController
    */
   async getAll ({ request, response }) 
   {
-    response.send(await Database.select('products.id as productID', 'products.name as productName', 'categories.id as categoryID', 'categories.name as categoryName').from('products').innerJoin('categories', 'products.category', 'categories.id'))
+    response.send(await Database.select('products.id as productID', 'products.name as productName', 'categories.id as categoryID', 'categories.name as categoryName').from('products').innerJoin('categories', 'products.category', 'categories.id').orderBy('products.name', 'asc'))
   }
 
   /**
