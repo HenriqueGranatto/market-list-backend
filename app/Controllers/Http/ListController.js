@@ -29,7 +29,8 @@ class ListController
 
     let items = await Database.raw('select distinct lists.id as id, markets.name as market, markets.id as marketID, products.name as product, products.id as productID, amount, price, weighing, weight from lists, markets, products where lists.product = products.id and lists.market = markets.id')
     items[0].map((obj) => obj.weighing = convertWeighing(obj))
-    items[0].map((obj) => obj.unitPrice = `R$ ${calculateUnitPrice(obj)}`)
+    items[0].map((obj) => obj.unitPrice = `${calculateUnitPrice(obj).toFixed(2)}`)
+    items[0].map((obj) => obj.weighing = (obj.weight != 'kg' && obj.weight != 'L') ? obj.weighing * 1000 : obj.weighing)
 
     let itemsByProduct = items[0].map((obj) => obj.product)
     itemsByProduct = Array.from(new Set(itemsByProduct))
@@ -37,11 +38,12 @@ class ListController
     for (let product of itemsByProduct) 
     {
         product = items[0].filter((obj) => obj.product == product)
-        product = product.sort((a, b) => a.unitPrice - b.unitPrice)[0]
-        product.unitPrice = `*R$ ${product.unitPrice}`
+        product = product.sort((a, b) => a.unitPrice - b.unitPrice)
+        product[0].unitPrice = `*R$ ${product[0].unitPrice}`
+        product = product.map((obj, idx) => (idx > 0) ? obj.unitPrice = `R$ ${obj.unitPrice}` : obj.unitPrice)
     }
 
-    response.send(items)
+    response.send(items) 
   }
 
   /**
