@@ -9,6 +9,7 @@ class ProductSchema extends Schema {
       table.increments()
       table.string('name', 100).notNullable().unique()
       table.integer('category').notNullable()
+      table.integer('priority').notNullable()
       table.timestamps()
     })
   }
