@@ -70,6 +70,12 @@ class ListController
    */
   async post ({ request, response }) 
   {
+    const convertWeighing = (product) => (product.weight != 'kg' && product.weight != 'L') ? calculateWeighing(product.weighing) : product.weighing
+    const calculateWeighing = (product) => product.weighing / 1000 
+    const calculateUnitPrice = (product) => product.price / convertWeighing(product.weighing)
+
+    request.body.unitPrice = calculateUnitPrice(request.body)
+
     response.send(await Database.table('lists').insert(request.body))
   }
 
